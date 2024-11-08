@@ -145,6 +145,15 @@ function pull_from_github() {
     echo "$response" | jq -r '.content' | base64 -d
 }
 
+function set_github_access() {
+    # Check if GITHUB_TOKEN is already set
+    if [ -z "${GITHUB_TOKEN}" ]; then
+        echo "🔑 Setting up GitHub token..."
+        GITHUB_TOKEN=$(secure_decrypt https://raw.githubusercontent.com/amit213/starter-kit/refs/heads/main/scripts/ghub-secure.txt)
+        export GITHUB_TOKEN
+    fi
+}
+
 # One-time bootstrap environment preparation
 ## dependency on secure_decrypt, pull_from_github
 function _bootstrap_starter_one() {
