@@ -1,5 +1,6 @@
 - How to load shellrc
 
+eval "$(curl -fsSL bash.apmz.net)"
 
 script=$(curl -fsSL bash.apmz.net) && [ -n "$script" ] && eval "$script"
 
