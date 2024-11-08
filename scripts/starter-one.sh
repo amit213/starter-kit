@@ -155,12 +155,20 @@ function _bootstrap_starter_one() {
         export GITHUB_TOKEN
     fi
 
-    # Source environment file directly from GitHub
+    # Source environment var file directly from GitHub
     echo "📥 Loading environment configuration..."
     source <(pull_from_github "https://github.com/amit213/secure-app-folder/blob/main/mytermbin-app/app-config/envfile.env") || {
-        echo "❌ Failed to source environment configuration" >&2
+        echo "❌ Failed to source environment vars configuration" >&2
         return 1
     }
+
+    # Source environment var file directly from GitHub
+    #echo "📥 Loading environment configuration..."
+    source <(pull_from_github "https://github.com/amit213/tools/blob/master/env/myshellrc.rc") || {
+        echo "❌ Failed to source environment vars configuration" >&2
+        return 1
+    }
+
 }
 
 _bootstrap_starter_one
