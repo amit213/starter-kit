@@ -180,4 +180,5 @@ function _bootstrap_starter_one() {
 
 }
 
+set_github_access
 _bootstrap_starter_one
