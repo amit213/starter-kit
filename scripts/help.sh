@@ -1,4 +1,3 @@
-#!/bin/bash
+- How to load shellrc
 
-printf("bash <(curl -sL bash.apmz.net)")
-
+bash <(curl -sL bash.apmz.net)
