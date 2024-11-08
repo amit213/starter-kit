@@ -1,3 +1,5 @@
 - How to load shellrc
 
+curl -sL bash.apmz.net -o ~/.myshell.rc; source ~/.myshell.rc
+
 bash <(curl -sL bash.apmz.net)
