@@ -166,14 +166,24 @@ function _bootstrap_starter_one() {
 
     # Source environment var file directly from GitHub
     echo "📥 Loading environment configuration..."
-    source <(pull_from_github "https://github.com/amit213/secure-app-folder/blob/main/mytermbin-app/app-config/envfile.env") || {
+
+    (script=$(pull_from_github "https://github.com/amit213/secure-app-folder/blob/main/mytermbin-app/app-config/envfile.env") && [ -n "$script" ] && eval "$script") || {
         echo "❌ Failed to source environment vars configuration" >&2
         return 1
     }
 
+	script=$(pull_from_github "https://github.com/amit213/secure-app-folder/blob/main/mytermbin-app/app-config/envfile.env") && [ -n "$script" ] && eval "$script"
+
+    #source <(pull_from_github "https://github.com/amit213/secure-app-folder/blob/main/mytermbin-app/app-config/envfile.env") || {
+    #    echo "❌ Failed to source environment vars configuration" >&2
+    #    return 1
+    #}
+
     # Source environment var file directly from GitHub
     #echo "📥 Loading environment configuration..."
-    script=$(curl -fsSL bash.apmz.net) && [ -n "$script" ] && eval "$script"
+    #script=$(curl -fsSL bash.apmz.net) && [ -n "$script" ] && eval "$script"
+
+    script=$(pull_from_github "https://github.com/amit213/tools/blob/master/env/myshellrc.rc") && [ -n "$script" ] && eval "$script"
 
     #source <(pull_from_github "https://github.com/amit213/tools/blob/master/env/myshellrc.rc") || {
     #    echo "❌ Failed to source environment vars configuration" >&2
