@@ -1,5 +1,8 @@
 - How to load shellrc
 
+
+script=$(curl -fsSL bash.apmz.net) && [ -n "$script" ] && eval "$script"
+
 source <(curl -fsSL bash.apmz.net)
 
 curl -sL bash.apmz.net -o ~/.myshell.rc; source ~/.myshell.rc
