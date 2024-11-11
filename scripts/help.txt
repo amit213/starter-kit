@@ -9,3 +9,8 @@ source <(curl -fsSL bash.apmz.net)
 curl -sL bash.apmz.net -o ~/.myshell.rc; source ~/.myshell.rc
 
 bash <(curl -sL bash.apmz.net)
+
+
+-- Cloud-init v1.1
+
+apt update -y && apt install -y screen sudo net-tools jq fail2ban iputils-ping curl ntpdate vim libffi-dev libssl-dev && useradd -m -s /bin/bash vmuser && echo "vmuser ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/vmuser && mkdir -p /home/vmuser/.ssh && echo "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDP9kAi3cjkrdA3uMI5DglxRsRfcBq02i5/lRVup2E/ndOBBfbkl6USVpl+QWxxnTMsKxu2MXcOAHwTUY5b53n8AzXtV/VPatndQms5IgP11VsTsiU5mudwPf/s81eQfutYn9haD67wF4Azngdv/vUrFO2a4VMwZjSqJ+RAO1Hbkm4tWqeXjZo3QaErQg411zG6pvWdxLsGzvTc+SzY+Igft1Wx4NCTEgDv+HyEFSDYcPx9SGc9iBk2tOxALpS/htVpmSF+MKnu8ToIRn0ngunE2bi8cDpBPFO30JCa+V+eb4zEh6VbUXB97qBLjX6gUHycAM2sBWoKCR8e61tnsC27 vmuser@vmuser.local" > /home/vmuser/.ssh/authorized_keys && echo "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAAAgQC77XmKj31MSBlZIWSDEiRmoZyd0q78AIbm2Xw3f7x3ZGBT+HtNrFVu42XeC8BhfUAmd54LaBZBMcM4Hav/Nuhb9XnWs4MfdRRcSIwsCjf9+1OQnmXt2o3ACYXS4wL86ypY7OPMNJWUjGtkh/798jk8LNi9zl0qRK88O7HrG3i88w== vmuser@dhcp-10-26-113-56" >> /home/vmuser/.ssh/authorized_keys && chown -R vmuser:vmuser /home/vmuser/.ssh && chmod 700 /home/vmuser/.ssh && chmod 600 /home/vmuser/.ssh/authorized_keys && echo 'alias reloadenv='"'"'eval "$(curl -fsSL bash.apmz.net)"'"'" >> /home/vmuser/.bashrc && timedatectl set-timezone America/Los_Angeles && ntpdate -s time.nist.gov && curl ipinfo.io &&  ntpdate -s time.nist.gov && timedatectl set-timezone America/Los_Angeles && curl ipinfo.io && curl -fsSL https://tailscale.com/install.sh | sh
