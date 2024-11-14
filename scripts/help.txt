@@ -1,5 +1,7 @@
 - How to load shellrc
 
+alias reloadenv='script=$(curl -fsSL bash.apmz.net) && [ -n "$script" ] && eval "$script"'
+
 eval "$(curl -fsSL bash.apmz.net)"
 
 script=$(curl -fsSL bash.apmz.net) && [ -n "$script" ] && eval "$script"
