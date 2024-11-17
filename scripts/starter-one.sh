@@ -167,9 +167,9 @@ function _bootstrap_starter_one() {
     # Source environment var file directly from GitHub
     echo "📥 Loading environment configuration..."
 
-    (script=$(pull_from_github "https://github.com/amit213/secure-app-folder/blob/main/mytermbin-app/app-config/envfile.env") && [ -n "$script" ] && eval "$script") || {
+    (script=$(pull_from_github "https://github.com/amit213/secure-app-folder/blob/main/global-system-config-app/app-config/envfile.env") && [ -n "$script" ] && eval "$script") || {
         echo "❌ Failed to source environment vars configuration" >&2
-        return 1
+        #return 1
     }
 
 	#script=$(pull_from_github "https://github.com/amit213/secure-app-folder/blob/main/mytermbin-app/app-config/envfile.env") && [ -n "$script" ] && eval "$script"
