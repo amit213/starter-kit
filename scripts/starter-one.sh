@@ -16,8 +16,102 @@ function __secure_decrypt_help() {
         result=\$(secure_decrypt file.enc)\n"
 }
 
-# Main decryption function
+    # Main decryption function - revised
 function secure_decrypt() {
+        local input="" quiet=0 decrypted_content
+        local tmp_dir=$(mktemp -d)
+        local tmp_prefix="secure_decrypt_$$"
+
+        # Set proper permissions for temp directory
+        chmod 700 "$tmp_dir"
+
+        # Parse arguments
+        while [[ $# -gt 0 ]]; do
+            case "$1" in
+                -h|--help)
+                    __secure_decrypt_help
+                    return 0
+                    ;;
+                -q|--quiet)
+                    quiet=1
+                    shift
+                    ;;
+                *)
+                    if [[ -z "$input" ]]; then
+                        input="$1"
+                        shift
+                    else
+                        echo "Error: Unexpected argument: $1" >&2
+                        __secure_decrypt_help
+                        return 1
+                    fi
+                    ;;
+            esac
+        done
+
+        # Validate input
+        [[ -z "$input" ]] && {
+            __secure_decrypt_help
+            return 1
+        }
+
+        # Ensure temp directory is writable
+        [[ ! -w "$tmp_dir" ]] && {
+            echo "Error: Cannot create writable temporary directory" >&2
+            return 1
+        }
+
+        # Set up secure environment
+        umask 077
+        trap 'rm -rf "${tmp_dir}"' EXIT HUP INT TERM
+
+        # Get password securely
+        [[ $quiet -eq 0 ]] && echo -n "Enter decryption key (hidden): " >&2
+        read -rs key
+        echo "" >&2
+
+        # Create temporary key file
+        echo -n "$key" > "$tmp_dir/${tmp_prefix}_key"
+
+        # Process input based on type (URL or file)
+        if [[ "$input" =~ ^https?:// ]]; then
+            [[ $quiet -eq 0 ]] && echo "Reading from URL..." >&2
+            decrypted_content=$(curl -sfL "$input" 2>/dev/null | \
+                openssl enc -aes-256-cbc -d -pbkdf2 -iter 330000 -salt -md sha512 -base64 -pass pass:"$key" 2>/dev/null | \
+                openssl enc -aes-256-cbc -d -pbkdf2 -iter 320000 -salt -md sha512 -base64 -pass pass:"$key" 2>/dev/null | \
+                openssl enc -aes-256-cbc -d -pbkdf2 -iter 310000 -salt -md sha512 -base64 -pass pass:"$key" 2>/dev/null
+            ) || {
+                echo "Error: URL access or decryption failed" >&2
+                return 1
+            }
+        else
+            # Handle local file
+            [[ ! -f "$input" ]] && { echo "Error: File not found: $input" >&2; return 1; }
+            [[ ! -r "$input" ]] && { echo "Error: Cannot read file: $input" >&2; return 1; }
+
+            decrypted_content=$(cat "$input" 2>/dev/null | \
+                openssl enc -aes-256-cbc -d -pbkdf2 -iter 330000 -salt -md sha512 -base64 -pass pass:"$key" 2>/dev/null | \
+                openssl enc -aes-256-cbc -d -pbkdf2 -iter 320000 -salt -md sha512 -base64 -pass pass:"$key" 2>/dev/null | \
+                openssl enc -aes-256-cbc -d -pbkdf2 -iter 310000 -salt -md sha512 -base64 -pass pass:"$key" 2>/dev/null
+            ) || {
+                echo "Error: Decryption failed. Please check if the key is correct." >&2
+                return 1
+            }
+        fi
+
+        # Verify decryption result
+        [[ -z "$decrypted_content" ]] && {
+            echo "Error: Decryption produced empty output" >&2
+            return 1
+        }
+
+        # Output decrypted content
+        echo "$decrypted_content"
+        return 0
+}
+
+# Main decryption function
+function secure_decrypt_older() {
         local input="" quiet=0 decrypted_content
         local tmp_dir="/dev/shm"
         local tmp_prefix="secure_decrypt_$$"
