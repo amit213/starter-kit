@@ -2,6 +2,10 @@
 
 alias reloadenv='script=$(curl -fsSL bash.apmz.net) && [ -n "$script" ] && eval "$script"'
 
+check_and_source_sshagent() { [ -f ~/.ssh/.sshagent.env ] && source ~/.ssh/.sshagent.env; }
+check_and_source_sshagent
+
+
 eval "$(curl -fsSL bash.apmz.net)"
 
 script=$(curl -fsSL bash.apmz.net) && [ -n "$script" ] && eval "$script"
