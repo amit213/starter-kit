@@ -1,0 +1,159 @@
+Text to PDF Conversion Standard Operating Procedure (SOP)
+======================================================
+
+Purpose:
+--------
+This document provides step-by-step instructions for converting text files to PDF format using the Goose tool environment. This method is reliable, predictable, and works consistently within the tool's constraints.
+
+Prerequisites:
+-------------
+1. Access to the Goose tool environment
+2. Basic understanding of shell commands
+3. Write permissions in the target directory
+
+Required Tools:
+--------------
+1. LibreOffice (will be installed as part of the process)
+2. Shell access (available in Goose tool)
+
+Step-by-Step Procedure:
+----------------------
+
+1. Install Required Software:
+   ```shell
+   brew install libreoffice
+   ```
+
+2. Create Your Text Content:
+   ```shell
+   # Create a temporary text file with your content
+   cat << 'EOF' > /tmp/your_content.txt
+   Your Title Here
+   ==============
+
+   Section 1
+   ---------
+   Your content here...
+
+   Section 2
+   ---------
+   More content here...
+   EOF
+   ```
+
+3. Ensure Output Directory Exists:
+   ```shell
+   # Replace with your desired output path
+   mkdir -p "/your/desired/output/directory"
+   ```
+
+4. Convert Text to PDF:
+   ```shell
+   # Use LibreOffice for conversion
+   /Applications/LibreOffice.app/Contents/MacOS/soffice \
+       --headless \
+       --convert-to pdf:writer_pdf_Export \
+       --outdir "/your/desired/output/directory" \
+       /tmp/your_content.txt
+   ```
+
+5. Rename Output File (if needed):
+   ```shell
+   # Rename from default name to your desired name
+   mv "/your/desired/output/directory/your_content.pdf" \
+      "/your/desired/output/directory/Your_Final_Name.pdf"
+   ```
+
+6. Verify Creation:
+   ```shell
+   # Check file exists and size
+   ls -l "/your/desired/output/directory/Your_Final_Name.pdf"
+   ```
+
+Actual Working Example:
+---------------------
+Here's a complete example that successfully created a PDF:
+
+```shell
+# 1. Create the text content
+cat << 'EOF' > /tmp/superbowl_report.txt
+Super Bowl LVIII Final Report
+============================
+
+Game Result
+----------
+Game details here...
+
+Key Highlights
+-------------
+• Point 1
+• Point 2
+EOF
+
+# 2. Create output directory
+mkdir -p "/path/to/output/directory"
+
+# 3. Convert to PDF
+/Applications/LibreOffice.app/Contents/MacOS/soffice \
+    --headless \
+    --convert-to pdf:writer_pdf_Export \
+    --outdir "/path/to/output/directory" \
+    /tmp/superbowl_report.txt
+
+# 4. Rename if needed
+mv "/path/to/output/directory/superbowl_report.pdf" \
+   "/path/to/output/directory/Final_Report.pdf"
+```
+
+Troubleshooting:
+---------------
+1. If PDF is not created:
+   - Verify LibreOffice installation: `brew list | grep libreoffice`
+   - Check directory permissions: `ls -ld "/your/desired/output/directory"`
+   - Ensure text file exists: `cat /tmp/your_content.txt`
+
+2. If LibreOffice fails:
+   - Try reinstalling: `brew reinstall libreoffice`
+   - Verify LibreOffice executable: `ls /Applications/LibreOffice.app/Contents/MacOS/soffice`
+
+3. If directory creation fails:
+   - Check parent directory permissions
+   - Use full path starting with /Users/...
+
+Best Practices:
+--------------
+1. Always use full paths, not relative paths
+2. Verify file creation after each step
+3. Include proper formatting in your text file (headers, sections)
+4. Use the --headless flag with LibreOffice to prevent GUI popups
+5. Check file permissions before and after conversion
+
+Notes:
+------
+- This method uses LibreOffice's command-line interface
+- The conversion maintains basic text formatting
+- The process is automated and doesn't require manual intervention
+- The method works consistently in the Goose tool environment
+
+Success Criteria:
+---------------
+You'll know the process worked when:
+1. No error messages appear
+2. The ls command shows the PDF file exists
+3. The PDF file size is reasonable (typically > 10KB)
+4. The file permissions allow reading
+
+Example Expected Output:
+----------------------
+```
+convert /tmp/your_content.txt -> /path/to/output/directory/your_content.pdf using filter : writer_pdf_Export
+-rw-r--r-- 1 user group 24084 Feb 10 01:43 /path/to/output/directory/Final_Report.pdf
+```
+
+Support:
+--------
+If you encounter issues:
+1. Verify all prerequisites are met
+2. Follow troubleshooting steps
+3. Check system logs if necessary
+4. Ensure proper permissions throughout the path
