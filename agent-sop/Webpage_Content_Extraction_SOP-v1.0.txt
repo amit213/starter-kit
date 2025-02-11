@@ -1,0 +1,249 @@
+Webpage Content Extraction to Markdown/Text Standard Operating Procedure (SOP)
+======================================================================
+
+Purpose:
+--------
+This document provides step-by-step instructions for extracting content from webpages and converting it into both markdown and plain text formats while preserving the original content structure, formatting, and meaning. This method ensures reliable and consistent output across different types of web pages.
+
+Prerequisites:
+-------------
+1. Access to web content fetching capabilities
+2. Basic understanding of markdown syntax
+3. Text processing abilities
+4. Write permissions in the target directory
+
+Required Tools:
+--------------
+1. Web content fetching tool (e.g., fetch, curl, urllib)
+2. Text processing capabilities
+3. Markdown conversion libraries (if available)
+4. Directory management tools
+
+Step-by-Step Procedure:
+----------------------
+
+1. Prepare Working Environment:
+   ```shell
+   # Create output directory structure
+   mkdir -p output_directory/markdown_output
+   mkdir -p output_directory/text_output
+   ```
+
+2. Fetch Web Content:
+   ```python
+   # Using a fetch tool to get clean content
+   response = fetch_content(url, raw=False)
+   
+   # If pagination or truncation exists, handle multiple fetches
+   if content_is_truncated:
+       additional_content = fetch_content(url, start_index=last_position)
+   ```
+
+3. Content Cleaning Process:
+   a. Remove HTML artifacts if present
+   b. Preserve original text structure
+   c. Maintain heading hierarchy
+   d. Keep image references and links
+   e. Retain formatting markers (bold, italic)
+
+4. Create Text Version:
+   ```python
+   def create_text_version(content):
+       # Remove markdown syntax
+       text_content = remove_markdown_syntax(content)
+       
+       # Preserve paragraph structure
+       text_content = maintain_paragraphs(text_content)
+       
+       # Ensure consistent line endings
+       text_content = normalize_line_endings(text_content)
+       
+       return text_content
+   ```
+
+5. Create Markdown Version:
+   ```python
+   def create_markdown_version(content):
+       # Preserve headers with proper markdown syntax
+       md_content = convert_headers(content)
+       
+       # Maintain lists and indentation
+       md_content = preserve_lists(md_content)
+       
+       # Keep image references
+       md_content = maintain_images(md_content)
+       
+       # Preserve links
+       md_content = preserve_links(md_content)
+       
+       return md_content
+   ```
+
+6. Save Output Files:
+   ```python
+   # Save markdown version
+   with open('output_directory/markdown_output/content.md', 'w') as f:
+       f.write(markdown_content)
+   
+   # Save text version
+   with open('output_directory/text_output/content.txt', 'w') as f:
+       f.write(text_content)
+   ```
+
+Content Preservation Guidelines:
+-----------------------------
+1. Original Text:
+   - Maintain exact wording
+   - Keep all paragraphs
+   - Preserve sentence structure
+   - Retain all content sections
+
+2. Formatting Elements:
+   - Headers and subheaders
+   - Lists (ordered and unordered)
+   - Emphasis (bold, italic)
+   - Blockquotes
+   - Tables (if present)
+
+3. Media References:
+   - Image URLs and captions
+   - Video references
+   - External links
+   - Citations and sources
+
+Best Practices:
+--------------
+1. Content Integrity:
+   - No paraphrasing or rewording
+   - Keep all original sections
+   - Maintain content order
+   - Preserve emphasis and formatting
+
+2. File Organization:
+   - Use clear file naming
+   - Separate markdown and text versions
+   - Maintain directory structure
+   - Include metadata if relevant
+
+3. Error Handling:
+   - Check for complete content
+   - Verify image references
+   - Validate markdown syntax
+   - Ensure text readability
+
+4. Output Validation:
+   - Compare with source
+   - Check formatting
+   - Verify completeness
+   - Test readability
+
+Implementation Examples:
+----------------------
+1. Basic Content Fetch:
+   ```python
+   content = fetch_webpage("https://example.com/article")
+   clean_content = remove_html_artifacts(content)
+   ```
+
+2. Handle Pagination:
+   ```python
+   full_content = ""
+   index = 0
+   while has_more_content:
+       chunk = fetch_webpage(url, start=index)
+       full_content += chunk
+       index += chunk_size
+   ```
+
+3. Format Preservation:
+   ```python
+   # Preserve headers
+   if line.startswith('#'):
+       markdown_output.append(line)
+   else:
+       text_output.append(line.strip('#'))
+   ```
+
+Success Criteria:
+---------------
+1. Content matches source exactly
+2. All sections are preserved
+3. Formatting is maintained where appropriate
+4. Images and links are properly referenced
+5. Output is readable and well-structured
+
+Troubleshooting:
+---------------
+1. Content Issues:
+   - Check source encoding
+   - Verify complete content fetch
+   - Ensure proper pagination handling
+
+2. Format Problems:
+   - Validate markdown syntax
+   - Check text line endings
+   - Verify list formatting
+
+3. Media References:
+   - Confirm image URL validity
+   - Check link formats
+   - Verify caption preservation
+
+References:
+----------
+1. Markdown Syntax Guide:
+   - https://www.markdownguide.org/basic-syntax/
+   - https://github.github.com/gfm/
+
+2. Web Content Extraction:
+   - https://developer.mozilla.org/en-US/docs/Web/API/Node/textContent
+   - https://www.w3.org/TR/html52/
+
+3. Text Processing:
+   - https://docs.python.org/3/library/text.html
+   - https://docs.python.org/3/library/re.html
+
+4. Content Preservation:
+   - https://www.w3.org/TR/html-design-principles/
+   - https://html.spec.whatwg.org/multipage/
+
+Version History:
+--------------
+v1.0 - Initial creation
+- Base extraction functionality
+- Markdown and text output support
+- Content preservation guidelines
+- Best practices documentation
+- Troubleshooting guide
+
+Support:
+--------
+For issues or improvements:
+1. Check troubleshooting section
+2. Verify prerequisites
+3. Validate input content
+4. Ensure proper tool access
+5. Review output requirements
+
+Notes:
+------
+- This method preserves original content integrity
+- Supports various webpage formats
+- Maintains consistent output structure
+- Ensures reliable content extraction
+- Provides both markdown and text options
+
+Example Output Validation:
+------------------------
+```shell
+# Check output files exist
+ls -l output_directory/markdown_output/
+ls -l output_directory/text_output/
+
+# Compare file sizes
+wc -l markdown_output/*
+wc -l text_output/*
+
+# Verify content integrity
+diff <(strip_markdown markdown_output/content.md) text_output/content.txt
+```
