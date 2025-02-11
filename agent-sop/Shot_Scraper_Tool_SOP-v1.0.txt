@@ -1,0 +1,195 @@
+Standard Operating Procedure (SOP)
+==========================================
+Title: Using shot-scraper Tool for Website Screenshots and Web Scraping
+Version: 1.0
+Created: 2024-02-06
+==========================================
+
+Table of Contents:
+-----------------
+1. Introduction
+2. Prerequisites
+3. Installation Process
+4. Basic Usage
+5. Advanced Features
+6. Troubleshooting
+7. Best Practices
+8. References
+9. Version History
+
+1. Introduction:
+---------------
+shot-scraper is a command-line utility built on Playwright for taking automated screenshots of websites, generating PDFs, and performing web scraping. This SOP provides a comprehensive guide for AI agents to understand and utilize the tool effectively.
+
+Key Capabilities:
+- Take full-page or element-specific screenshots
+- Generate PDFs of web pages
+- Capture HTML snapshots
+- Execute JavaScript on pages
+- Handle authentication
+- Support for multiple capture configurations
+- GitHub Actions integration
+
+2. Prerequisites:
+----------------
+Required components:
+- Python 3.x
+- pip (Python package manager)
+- Access to command line/terminal
+- Internet connection
+- Operating System: Windows/macOS/Linux
+
+3. Installation Process:
+-----------------------
+3.1 Virtual Environment Setup (Recommended):
+```bash
+# Create virtual environment
+python3 -m venv shot-scraper-env
+
+# Activate virtual environment
+# On Unix/macOS:
+source shot-scraper-env/bin/activate
+# On Windows:
+.\shot-scraper-env\Scripts\activate
+```
+
+3.2 Install shot-scraper:
+```bash
+pip install shot-scraper
+```
+
+3.3 Install required browser:
+```bash
+shot-scraper install
+```
+
+4. Basic Usage:
+--------------
+4.1 Taking Basic Screenshot:
+```bash
+shot-scraper https://example.com/
+```
+
+4.2 Specifying Output File:
+```bash
+shot-scraper https://example.com/ -o screenshot.png
+```
+
+4.3 Setting Viewport Dimensions:
+```bash
+# Mobile viewport (iPhone 12)
+shot-scraper https://example.com/ --width 390 --height 844
+
+# Desktop viewport
+shot-scraper https://example.com/ --width 1280 --height 800
+```
+
+4.4 Common Device Dimensions:
+- iPhone 12/13/14: 390x844
+- iPhone 12/13/14 Pro Max: 428x926
+- iPad: 768x1024
+- Desktop: 1280x800 or 1920x1080
+
+5. Advanced Features:
+--------------------
+5.1 Capturing Specific Elements:
+```bash
+# Using CSS selector
+shot-scraper https://example.com/ -s '#header'
+
+# Multiple elements
+shot-scraper https://example.com/ -s '#header' -s '.main-content'
+```
+
+5.2 Waiting for Content:
+```bash
+# Wait for specific milliseconds
+shot-scraper https://example.com/ --wait 2000
+
+# Wait for specific element
+shot-scraper https://example.com/ --wait-for 'document.querySelector(".content")'
+```
+
+5.3 JavaScript Interaction:
+```bash
+# Remove cookie banner before screenshot
+shot-scraper https://example.com/ --wait-for "() => {
+    const banner = document.querySelector('.cookie-banner');
+    if (banner) {
+        banner.remove();
+        return true;
+    }
+}"
+```
+
+5.4 PDF Generation:
+```bash
+shot-scraper pdf https://example.com/ -o document.pdf
+```
+
+5.5 HTML Snapshot:
+```bash
+shot-scraper html https://example.com/ -o snapshot.html
+```
+
+6. Troubleshooting:
+------------------
+Common Issues and Solutions:
+
+6.1 Installation Issues:
+- Error: "externally-managed-environment"
+  Solution: Use virtual environment as shown in section 3.1
+
+6.2 Screenshot Problems:
+- Blank/incomplete screenshots
+  Solution: Use --wait or --wait-for to ensure content loads
+- Element not found
+  Solution: Verify CSS selector and use --wait if dynamic content
+
+6.3 Browser Issues:
+- Browser installation failed
+  Solution: Run 'shot-scraper install' with admin privileges
+
+7. Best Practices:
+-----------------
+7.1 Performance:
+- Use appropriate wait times (--wait) for dynamic content
+- Optimize viewport size for target device
+- Consider using --selector for specific elements instead of full page
+
+7.2 Quality Assurance:
+- Verify selectors before automation
+- Test with different viewport sizes
+- Handle dynamic content appropriately
+- Use meaningful filenames for outputs
+
+7.3 Automation:
+- Use configuration files for repeated tasks
+- Implement error handling in scripts
+- Document selector choices and wait conditions
+
+8. References:
+-------------
+8.1 Official Documentation:
+- Main Repository: https://github.com/simonw/shot-scraper
+- Documentation: https://shot-scraper.datasette.io/en/stable/
+- Screenshots Guide: https://shot-scraper.datasette.io/en/stable/screenshots.html
+- Authentication: https://shot-scraper.datasette.io/en/stable/authentication.html
+- JavaScript Usage: https://shot-scraper.datasette.io/en/stable/javascript.html
+- PDF Generation: https://shot-scraper.datasette.io/en/stable/pdf.html
+- HTML Snapshots: https://shot-scraper.datasette.io/en/stable/html.html
+- GitHub Actions: https://shot-scraper.datasette.io/en/stable/github-actions.html
+
+8.2 Additional Resources:
+- Playwright Documentation: https://playwright.dev/
+- CSS Selectors Reference: https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Selectors
+
+9. Version History:
+------------------
+v1.0 (2024-02-06):
+- Initial SOP creation
+- Documented installation, basic usage, and advanced features
+- Added troubleshooting and best practices sections
+- Included comprehensive references
+
+Note: This SOP is designed to be used by AI agents and human operators alike. Regular updates are recommended as new versions of shot-scraper are released or when new best practices emerge.
