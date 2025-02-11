@@ -1,0 +1,276 @@
+Standard Operating Procedure (SOP)
+==========================================
+Title: PDF Generation Using ReportLab Library
+Version: 1.0
+Created: 2024-02-06
+==========================================
+
+Table of Contents:
+-----------------
+1. Introduction
+2. Prerequisites
+3. Installation Process
+4. Basic Usage
+5. Advanced Features
+6. Common Issues & Solutions
+7. Best Practices
+8. Code Examples
+9. References
+10. Version History
+
+1. Introduction:
+---------------
+ReportLab is a robust Python library for generating PDFs programmatically. This SOP provides a comprehensive guide for AI agents to create well-formatted PDF documents using ReportLab, with emphasis on text formatting, page layout, and proper content organization.
+
+Key Capabilities:
+- Generate PDFs programmatically
+- Handle complex text formatting
+- Manage page layouts and margins
+- Support multiple page documents
+- Include headers and footers
+- Text wrapping and flow control
+- Font management
+- Table creation
+- Graphics and images integration
+
+2. Prerequisites:
+----------------
+Required components:
+- Python 3.x
+- pip (Python package manager)
+- Virtual environment capability
+- Basic understanding of PDF structure
+- Text editor or IDE
+- Operating System: Windows/macOS/Linux
+
+3. Installation Process:
+-----------------------
+3.1 Virtual Environment Setup (Recommended):
+```bash
+# Create virtual environment
+python3 -m venv reportlab_env
+
+# Activate virtual environment
+# On Unix/macOS:
+source reportlab_env/bin/activate
+# On Windows:
+.\reportlab_env\Scripts\activate
+```
+
+3.2 Install ReportLab:
+```bash
+pip install reportlab
+```
+
+3.3 Verify Installation:
+```python
+# Test in Python
+import reportlab
+print(reportlab.__version__)
+```
+
+4. Basic Usage:
+--------------
+4.1 Creating a Simple PDF:
+```python
+from reportlab.pdfgen import canvas
+from reportlab.lib.pagesizes import letter
+
+def create_simple_pdf(filename):
+    c = canvas.Canvas(filename, pagesize=letter)
+    c.drawString(100, 750, "Hello, PDF!")
+    c.save()
+```
+
+4.2 Page Size Options:
+- letter: (612, 792) points
+- A4: (595, 842) points
+- legal: (612, 1008) points
+
+4.3 Basic Text Operations:
+```python
+# Set font and size
+c.setFont("Helvetica", 12)
+
+# Draw text
+c.drawString(x, y, "Your text here")
+
+# Draw right-aligned text
+c.drawRightString(x, y, "Right aligned")
+
+# Draw centered text
+c.drawCentredString(x, y, "Centered")
+```
+
+5. Advanced Features:
+--------------------
+5.1 Text Wrapping:
+```python
+from reportlab.lib.units import inch
+from reportlab.lib.pagesizes import letter
+
+def wrap_text(c, text, x, y, width):
+    words = text.split()
+    lines = []
+    current_line = []
+    
+    for word in words:
+        current_line.append(word)
+        line_width = c.stringWidth(' '.join(current_line))
+        if line_width > width:
+            current_line.pop()
+            lines.append(' '.join(current_line))
+            current_line = [word]
+    
+    lines.append(' '.join(current_line))
+    return lines
+```
+
+5.2 Page Management:
+```python
+# Start new page
+c.showPage()
+
+# Get page dimensions
+width, height = letter
+
+# Set margins
+margin = inch
+```
+
+5.3 Headers and Footers:
+```python
+def add_header(c, text):
+    c.saveState()
+    c.setFont('Helvetica-Bold', 14)
+    c.drawString(inch, height-inch, text)
+    c.restoreState()
+```
+
+6. Common Issues & Solutions:
+---------------------------
+6.1 Text Positioning:
+Issue: Text appears upside down or misplaced
+Solution: Remember ReportLab uses bottom-left origin (0,0)
+```python
+# Convert from top-left to bottom-left coordinates
+y = height - top_margin - text_height
+```
+
+6.2 Character Encoding:
+Issue: Special characters not displaying
+Solution: Use Unicode strings and appropriate fonts
+```python
+c.setFont('Helvetica', 12)
+c.drawString(x, y, u"Special characters: äöü")
+```
+
+6.3 Page Overflow:
+Issue: Text exceeding page bounds
+Solution: Implement page breaking logic
+```python
+if y < bottom_margin:
+    c.showPage()
+    y = height - top_margin
+```
+
+7. Best Practices:
+-----------------
+7.1 Document Structure:
+- Use consistent margins
+- Implement proper page breaks
+- Maintain font hierarchy
+- Use meaningful variable names
+
+7.2 Performance:
+- Batch similar operations
+- Reuse font declarations
+- Minimize state changes
+- Use appropriate image formats
+
+7.3 Code Organization:
+- Create reusable functions
+- Implement error handling
+- Document function parameters
+- Use type hints
+
+8. Code Examples:
+----------------
+8.1 Complete Document Generation:
+```python
+from reportlab.pdfgen import canvas
+from reportlab.lib.pagesizes import letter
+from reportlab.lib.units import inch
+
+def create_document(filename, title, content):
+    c = canvas.Canvas(filename, pagesize=letter)
+    width, height = letter
+    y = height - inch  # Start position
+    
+    # Add title
+    c.setFont("Helvetica-Bold", 14)
+    c.drawString(inch, y, title)
+    y -= inch/2
+    
+    # Add content
+    c.setFont("Helvetica", 11)
+    for line in content:
+        if y < inch:  # Check for page break
+            c.showPage()
+            y = height - inch
+            c.setFont("Helvetica", 11)
+        c.drawString(inch, y, line)
+        y -= 15
+    
+    c.save()
+```
+
+8.2 Table Creation:
+```python
+from reportlab.platypus import SimpleDocTemplate, Table, TableStyle
+from reportlab.lib import colors
+
+def create_table_pdf(filename, data):
+    doc = SimpleDocTemplate(filename, pagesize=letter)
+    elements = []
+    
+    t = Table(data)
+    t.setStyle(TableStyle([
+        ('ALIGN', (0,0), (-1,-1), 'CENTER'),
+        ('GRID', (0,0), (-1,-1), 1, colors.black)
+    ]))
+    
+    elements.append(t)
+    doc.build(elements)
+```
+
+9. References:
+-------------
+9.1 Official Documentation:
+- ReportLab User Guide: https://www.reportlab.com/docs/reportlab-userguide.pdf
+- API Reference: https://www.reportlab.com/docs/reportlab-reference.pdf
+- GitHub Repository: https://github.com/reportlab/reportlab
+
+9.2 Additional Resources:
+- Python Package Index: https://pypi.org/project/reportlab/
+- PDF Specification: https://www.adobe.com/content/dam/acom/en/devnet/pdf/pdfs/PDF32000_2008.pdf
+
+10. Version History:
+------------------
+v1.0 (2024-02-06):
+- Initial SOP creation
+- Documented installation, basic and advanced usage
+- Added troubleshooting and best practices
+- Included comprehensive code examples
+
+Note: This SOP is designed for both AI agents and human operators. Regular updates are recommended as new versions of ReportLab are released or when new best practices emerge.
+
+Tips for AI Agents:
+------------------
+1. Always verify the PDF output after generation
+2. Keep track of y-coordinate position
+3. Implement error handling for text overflow
+4. Test with various content lengths
+5. Consider accessibility requirements
+6. Document all custom functions
+7. Maintain state consistency across pages
