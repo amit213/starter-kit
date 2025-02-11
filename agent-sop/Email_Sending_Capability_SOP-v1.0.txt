@@ -1,0 +1,233 @@
+Email Sending Capability Standard Operating Procedure (SOP)
+====================================================
+
+Purpose:
+--------
+This document provides comprehensive instructions for implementing and using email sending capabilities within the Goose tool environment or any LLM AI agent system. This method ensures reliable email delivery with attachment support using SMTP protocols.
+
+Prerequisites:
+-------------
+1. Access to Python 3.x environment
+2. Basic understanding of SMTP protocol
+3. Email server credentials (SMTP server details, username, password)
+4. Write permissions in the working directory
+
+Required Tools & Libraries:
+--------------------------
+1. Python 3.x
+2. Python standard libraries:
+   - smtplib
+   - email.mime modules
+   - os module
+3. Access to SMTP server details
+
+Step-by-Step Implementation:
+---------------------------
+
+1. Verify Python Installation:
+   ```shell
+   python3 --version
+   ```
+
+2. Create Python Script Structure:
+   ```python
+   # Email sending script template
+   import smtplib
+   from email.mime.text import MIMEText
+   from email.mime.multipart import MIMEMultipart
+   from email.mime.application import MIMEApplication
+   import os
+   ```
+
+3. Configure Email Settings:
+   ```python
+   # Email configuration constants
+   SMTP_SERVER = "your.smtp.server"
+   SMTP_PORT = 2525  # Common ports: 587, 2525, 465 (SSL)
+   USERNAME = "your_username"
+   PASSWORD = "your_password"
+   SENDER_EMAIL = "sender@domain.com"
+   ```
+
+4. Implement Email Function:
+   ```python
+   def send_email(receiver_email, subject, body, attachment_path=None):
+       # Create message container
+       message = MIMEMultipart()
+       message["Subject"] = subject
+       message["From"] = SENDER_EMAIL
+       message["To"] = receiver_email
+
+       # Add body text
+       message.attach(MIMEText(body, "plain"))
+
+       # Handle attachment if provided
+       if attachment_path and os.path.exists(attachment_path):
+           with open(attachment_path, "rb") as f:
+               attachment = MIMEApplication(f.read(), _subtype=os.path.splitext(attachment_path)[1][1:])
+               attachment.add_header(
+                   "Content-Disposition",
+                   "attachment",
+                   filename=os.path.basename(attachment_path)
+               )
+               message.attach(attachment)
+
+       # Establish SMTP connection
+       try:
+           with smtplib.SMTP(SMTP_SERVER, SMTP_PORT) as server:
+               server.starttls()  # Enable TLS
+               server.login(USERNAME, PASSWORD)
+               server.send_message(message)
+           return True, "Email sent successfully!"
+       except Exception as e:
+           return False, f"Error sending email: {str(e)}"
+   ```
+
+5. Implement Error Handling:
+   ```python
+   def validate_email_config():
+       required_fields = {
+           "SMTP_SERVER": SMTP_SERVER,
+           "SMTP_PORT": SMTP_PORT,
+           "USERNAME": USERNAME,
+           "PASSWORD": PASSWORD,
+           "SENDER_EMAIL": SENDER_EMAIL
+       }
+       
+       for field, value in required_fields.items():
+           if not value:
+               raise ValueError(f"Missing required configuration: {field}")
+   ```
+
+6. Usage Example:
+   ```python
+   # Example implementation
+   if __name__ == "__main__":
+       receiver = "recipient@domain.com"
+       subject = "Test Email"
+       body = "This is a test email with attachment."
+       attachment = "/path/to/attachment.pdf"
+       
+       success, message = send_email(receiver, subject, body, attachment)
+       print(message)
+   ```
+
+Security Best Practices:
+----------------------
+1. Never hardcode credentials in the script
+2. Use environment variables for sensitive data:
+   ```python
+   import os
+   
+   USERNAME = os.environ.get("SMTP_USERNAME")
+   PASSWORD = os.environ.get("SMTP_PASSWORD")
+   ```
+3. Always use TLS/SSL encryption
+4. Validate email addresses and attachment sizes
+5. Implement rate limiting for bulk emails
+6. Use secure SMTP ports (587, 2525, 465)
+
+Common SMTP Servers Configuration:
+--------------------------------
+1. Gmail SMTP:
+   - Server: smtp.gmail.com
+   - Ports: 587 (TLS) or 465 (SSL)
+   - Requires App Password for 2FA accounts
+
+2. SMTP2GO:
+   - Server: mail.smtp2go.com
+   - Ports: 2525, 587, 465 (SSL)
+   - Supports multiple authentication methods
+
+3. Office 365:
+   - Server: smtp.office365.com
+   - Port: 587
+   - Uses modern authentication
+
+Troubleshooting:
+---------------
+1. Connection Issues:
+   - Verify SMTP server and port
+   - Check firewall settings
+   - Ensure TLS/SSL is properly configured
+
+2. Authentication Errors:
+   - Verify credentials
+   - Check for special characters in password
+   - Confirm account permissions
+
+3. Attachment Problems:
+   - Verify file permissions
+   - Check attachment size limits
+   - Ensure file path exists
+
+Best Practices:
+--------------
+1. Use with context managers (with statement)
+2. Implement retry logic for failed attempts
+3. Log all email activities
+4. Use proper MIME types for attachments
+5. Implement timeout handling
+6. Validate email addresses format
+7. Handle different character encodings
+
+Example Logging Implementation:
+-----------------------------
+```python
+import logging
+
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(levelname)s - %(message)s',
+    filename='email_service.log'
+)
+
+def send_email(...):
+    try:
+        # email sending logic
+        logging.info(f"Email sent to {receiver_email}")
+    except Exception as e:
+        logging.error(f"Failed to send email: {str(e)}")
+```
+
+Success Criteria:
+---------------
+1. Email is delivered to recipient
+2. Attachments are properly included
+3. No sensitive data is exposed
+4. Proper error handling occurs
+5. Activity is logged appropriately
+
+References:
+----------
+1. Python Email Documentation:
+   - https://docs.python.org/3/library/email.html
+   - https://docs.python.org/3/library/smtplib.html
+
+2. SMTP Protocol References:
+   - https://tools.ietf.org/html/rfc5321
+   - https://tools.ietf.org/html/rfc5322
+
+3. Security Best Practices:
+   - https://security.stackexchange.com/questions/tagged/smtp
+   - https://owasp.org/www-project-top-ten/
+
+4. Common SMTP Servers Documentation:
+   - https://support.google.com/mail/answer/7126229
+   - https://smtp2go.com/docs/
+
+Version History:
+--------------
+v1.0 - Initial creation
+- Base functionality with attachment support
+- Security best practices
+- Troubleshooting guide
+- Common SMTP server configurations
+
+Support:
+--------
+For issues or improvements:
+1. Check troubleshooting section
+2. Verify prerequisites
+3. Review security settings
+4. Consult server-specific documentation
