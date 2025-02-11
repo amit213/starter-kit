@@ -1,0 +1,176 @@
+# Standard Operating Procedure (SOP): Image Search and Operations
+
+## Document Overview
+### Purpose
+This Standard Operating Procedure (SOP) provides a comprehensive, step-by-step guide for conducting image-related operations, specifically focused on image discovery, analysis, and manipulation across file systems.
+
+### Scope
+The procedures outlined in this document are applicable to:
+- File system image searches
+- Image dimension identification
+- Image metadata extraction
+- Cross-platform image operations
+
+### Prerequisites
+- Command-line interface access
+- Basic understanding of file system navigation
+- Image processing tools installed (recommended)
+  - ImageMagick (recommended primary tool)
+  - Alternative: ExifTool
+  - Platform-specific image processing utilities
+
+## Section 1: Preparing the Environment
+
+### 1.1 Tool Installation Procedure
+1. Verify image processing tool availability
+   a. For MacOS/Linux:
+      ```bash
+      # Check ImageMagick installation
+      which convert
+      which identify
+
+      # If not installed, use package manager
+      # MacOS
+      brew install imagemagick
+
+      # Linux (Ubuntu/Debian)
+      sudo apt-get install imagemagick
+
+      # Linux (CentOS/RHEL)
+      sudo yum install ImageMagick
+      ```
+
+   b. For Windows:
+      - Download ImageMagick from official website
+      - Add to system PATH
+      - Verify installation via Command Prompt
+
+### 1.2 Preliminary System Check
+1. Confirm current working directory
+2. Validate file system permissions
+3. Ensure sufficient disk access rights
+
+## Section 2: Image Search Strategies
+
+### 2.1 Basic File Search
+```bash
+# Search for image files by extension
+find /path/to/search -type f \( -name "*.jpg" -o -name "*.png" -o -name "*.jpeg" -o -name "*.gif" -o -name "*.webp" \)
+```
+
+### 2.2 Dimension-Based Image Search
+```bash
+# Search for images with specific dimensions
+find /path/to/search -type f \( -name "*.jpg" -o -name "*.png" \) -exec sh -c '
+    dimensions=$(identify -format "%wx%h" "$0" 2>/dev/null)
+    if [ "$dimensions" = "704x700" ]; then 
+        echo "$0"
+    fi
+' {} \;
+```
+
+### 2.3 Advanced Search Parameters
+1. File Size Filtering
+   ```bash
+   # Find images larger than 1MB
+   find /path/to/search -type f \( -name "*.jpg" -o -name "*.png" \) -size +1M
+   ```
+
+2. Date-Based Filtering
+   ```bash
+   # Find images modified in last 7 days
+   find /path/to/search -type f \( -name "*.jpg" -o -name "*.png" \) -mtime -7
+   ```
+
+## Section 3: Image Metadata Extraction
+
+### 3.1 Dimension Extraction
+```bash
+# Extract image dimensions
+identify -format "%f: %wx%h\n" /path/to/image/*
+```
+
+### 3.2 Comprehensive Metadata Retrieval
+```bash
+# Extract full image metadata
+identify -verbose /path/to/image/example.jpg
+```
+
+## Section 4: Image Manipulation Techniques
+
+### 4.1 Resize Images
+```bash
+# Resize maintaining aspect ratio
+convert input.jpg -resize 50% output.jpg
+
+# Resize to exact dimensions
+convert input.jpg -resize 800x600! output.jpg
+```
+
+### 4.2 Format Conversion
+```bash
+# Convert between image formats
+convert input.png output.jpg
+```
+
+## Section 5: Error Handling and Logging
+
+### 5.1 Error Capture Mechanism
+1. Use error redirection
+2. Log errors for troubleshooting
+   ```bash
+   find /path -type f -exec command {} 2>> error.log \;
+   ```
+
+### 5.2 Common Error Scenarios
+- Invalid file paths
+- Insufficient permissions
+- Unsupported image formats
+- Tool installation issues
+
+## Section 6: Best Practices
+
+1. Always use absolute file paths
+2. Implement verbose logging
+3. Use system-appropriate tools
+4. Handle special characters in filenames
+5. Validate input before processing
+
+## Section 7: Performance Considerations
+
+1. Use efficient search strategies
+2. Limit search depth
+3. Use parallel processing for large directories
+4. Implement caching mechanisms
+
+## Section 8: Security Precautions
+
+1. Sanitize input paths
+2. Use read-only access when possible
+3. Avoid recursive searches in untrusted directories
+4. Implement file type verification
+
+## Appendix A: Tool Compatibility Matrix
+
+| Tool         | MacOS | Linux | Windows | Notes                        |
+|--------------|-------|-------|---------|------------------------------|
+| ImageMagick  | ✓     | ✓     | ✓       | Most versatile               |
+| ExifTool     | ✓     | ✓     | ✓       | Metadata specialization      |
+| GraphicsMagick| ✓    | ✓     | ✓       | Performance-focused variant  |
+
+## Appendix B: Troubleshooting
+
+1. Tool not found errors
+   - Verify PATH configuration
+   - Reinstall image processing tools
+   - Check system architecture compatibility
+
+2. Permission denied
+   - Use sudo/administrator privileges
+   - Adjust file/directory permissions
+   - Verify user access rights
+
+## Version Information
+- Document Version: 1.0
+- Last Updated: [Current Date]
+- Maintained by: [Your Organization/Name]
