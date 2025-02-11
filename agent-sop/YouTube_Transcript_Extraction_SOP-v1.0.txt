@@ -1,0 +1,262 @@
+YouTube Video Transcript Extraction Standard Operating Procedure (SOP)
+================================================================
+
+Purpose:
+--------
+This document provides step-by-step instructions for extracting transcripts from YouTube videos using Python, handling various URL formats, and generating both plain text and time-coded outputs. This method ensures reliable and consistent transcript extraction across different types of YouTube videos.
+
+Prerequisites:
+-------------
+1. Python 3.x installed
+2. Access to pip package manager
+3. Write permissions in the target directory
+4. Internet connectivity
+5. Valid YouTube video URL
+
+Required Tools & Libraries:
+-------------------------
+1. youtube_transcript_api
+2. python-venv (for virtual environment)
+3. datetime module (standard library)
+4. re module (standard library)
+5. os module (standard library)
+
+Installation Steps:
+-----------------
+1. Create Virtual Environment:
+   ```shell
+   # Create a new virtual environment
+   python3 -m venv youtube_env
+
+   # Activate the virtual environment
+   # On Unix/macOS:
+   source youtube_env/bin/activate
+   # On Windows:
+   youtube_env\Scripts\activate
+   ```
+
+2. Install Required Packages:
+   ```shell
+   pip install youtube_transcript_api
+   ```
+
+Step-by-Step Implementation:
+--------------------------
+
+1. Setup Project Structure:
+   ```shell
+   mkdir -p youtube_transcripts
+   ```
+
+2. Create Python Script Structure:
+   ```python
+   # Import required libraries
+   from youtube_transcript_api import YouTubeTranscriptApi
+   import re
+   from datetime import timedelta
+   import os
+   ```
+
+3. Implement Helper Functions:
+   ```python
+   def format_time(seconds):
+       """Convert seconds to HH:MM:SS format"""
+       return str(timedelta(seconds=int(seconds)))
+
+   def get_video_id(url):
+       """Extract video ID from various YouTube URL formats"""
+       patterns = [
+           r'(?:v=|\/)([0-9A-Za-z_-]{11}).*',  # Standard and mobile URLs
+           r'youtu\.be\/([0-9A-Za-z_-]{11})',   # Short URLs
+       ]
+       for pattern in patterns:
+           match = re.search(pattern, url)
+           if match:
+               return match.group(1)
+       return None
+   ```
+
+4. Implement Main Transcript Extraction Function:
+   ```python
+   def save_transcript(video_url, output_dir="youtube_transcripts"):
+       # Extract video ID
+       video_id = get_video_id(video_url)
+       if not video_id:
+           raise ValueError("Invalid YouTube URL")
+
+       # Get transcript
+       transcript = YouTubeTranscriptApi.get_transcript(video_id)
+
+       # Create plain text version
+       plain_text = " ".join(entry['text'] for entry in transcript)
+
+       # Create timecoded version
+       timecoded_text = f"Video ID: {video_id}\nTranscript:\n{'='*50}\n\n"
+       for entry in transcript:
+           timestamp = format_time(entry['start'])
+           timecoded_text += f"[{timestamp}] {entry['text']}\n"
+
+       # Ensure output directory exists
+       os.makedirs(output_dir, exist_ok=True)
+
+       # Save files
+       with open(f"{output_dir}/transcript_{video_id}_plain.txt", 'w', encoding='utf-8') as f:
+           f.write(plain_text)
+       with open(f"{output_dir}/transcript_{video_id}_timecoded.txt", 'w', encoding='utf-8') as f:
+           f.write(timecoded_text)
+   ```
+
+5. Usage Example:
+   ```python
+   # Example usage
+   video_url = "https://www.youtube.com/watch?v=VIDEO_ID"
+   try:
+       save_transcript(video_url)
+       print("Transcript extracted successfully!")
+   except Exception as e:
+       print(f"Error: {str(e)}")
+   ```
+
+Supported URL Formats:
+--------------------
+1. Standard YouTube URLs:
+   - https://www.youtube.com/watch?v=VIDEO_ID
+   - https://youtube.com/watch?v=VIDEO_ID
+
+2. Short URLs:
+   - https://youtu.be/VIDEO_ID
+
+3. Mobile URLs:
+   - https://m.youtube.com/watch?v=VIDEO_ID
+
+4. Embedded URLs:
+   - https://www.youtube.com/embed/VIDEO_ID
+
+Output Formats:
+-------------
+1. Plain Text Format:
+   - Continuous text without timestamps
+   - Suitable for reading or processing
+   - Named: transcript_VIDEO_ID_plain.txt
+
+2. Time-coded Format:
+   - Includes timestamps in [HH:MM:SS] format
+   - Shows transcript progression
+   - Named: transcript_VIDEO_ID_timecoded.txt
+
+Best Practices:
+-------------
+1. URL Handling:
+   - Always validate video ID
+   - Support multiple URL formats
+   - Handle invalid URLs gracefully
+
+2. Transcript Processing:
+   - Use UTF-8 encoding
+   - Preserve original text
+   - Format timestamps consistently
+
+3. File Management:
+   - Use unique filenames
+   - Create directories as needed
+   - Handle file write permissions
+
+4. Error Handling:
+   - Check for missing transcripts
+   - Validate video accessibility
+   - Handle network issues
+
+Troubleshooting:
+--------------
+1. No Transcript Available:
+   - Verify video has captions
+   - Check for region restrictions
+   - Try alternative language transcripts
+
+2. URL Issues:
+   - Verify URL format
+   - Check video ID length
+   - Ensure video exists
+
+3. Output Problems:
+   - Check write permissions
+   - Verify directory exists
+   - Ensure valid encoding
+
+Success Criteria:
+---------------
+1. Video ID successfully extracted
+2. Transcript retrieved from YouTube
+3. Both output files created
+4. Timestamps properly formatted
+5. Text properly encoded
+
+Error Handling:
+-------------
+```python
+try:
+    transcript = YouTubeTranscriptApi.get_transcript(video_id)
+except Exception as e:
+    if "No transcripts were found" in str(e):
+        print("No transcript available for this video")
+    elif "is not a valid YouTube video ID" in str(e):
+        print("Invalid video ID")
+    else:
+        print(f"Error: {str(e)}")
+```
+
+References:
+----------
+1. YouTube Transcript API Documentation:
+   - https://pypi.org/project/youtube-transcript-api/
+   - https://github.com/jdepoix/youtube-transcript-api
+
+2. YouTube URL Formats:
+   - https://developers.google.com/youtube/player_parameters
+   - https://developers.google.com/youtube/v3/docs/videos
+
+3. Python Documentation:
+   - https://docs.python.org/3/library/venv.html
+   - https://docs.python.org/3/library/datetime.html
+
+Version History:
+--------------
+v1.0 - Initial creation
+- Base transcript extraction
+- Multiple URL format support
+- Two output formats
+- Error handling implementation
+
+Support:
+-------
+For issues:
+1. Check video has captions
+2. Verify URL format
+3. Check network connection
+4. Ensure proper permissions
+5. Validate virtual environment
+
+Notes:
+-----
+- Works with auto-generated captions
+- Supports multiple languages
+- Handles various URL formats
+- Creates two output formats
+- UTF-8 encoding support
+
+Example Output:
+------------
+1. Time-coded Format:
+```
+Video ID: EXAMPLE_ID
+Transcript:
+==================================================
+[0:00:00] First line of transcript
+[0:00:02] Second line with timestamp
+[0:00:05] Continues with more text
+```
+
+2. Plain Text Format:
+```
+First line of transcript Second line with timestamp Continues with more text
+```
