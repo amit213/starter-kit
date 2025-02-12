@@ -1,0 +1,207 @@
+========================================
+STANDARD OPERATING PROCEDURE (SOP)
+Goose Session User Prompt History Logging
+Version: 1.0
+========================================
+
+METADATA
+--------
+Created Date: February 2024
+LLM Model: Goose AI
+Model Version: 1.0
+Last Updated: February 12, 2024
+Author: Goose AI Assistant
+Document Status: Active
+
+1. PURPOSE
+----------
+This Standard Operating Procedure (SOP) provides a comprehensive guide for implementing automated user prompt history logging in Goose AI sessions. It enables systematic capture, storage, and management of user interactions for context preservation and analysis.
+
+2. SCOPE
+--------
+This SOP covers:
+- Setup of prompt logging infrastructure
+- Implementation of automated logging mechanisms
+- Management of log files
+- Best practices for prompt history maintenance
+
+3. PREREQUISITES
+---------------
+3.1. System Requirements:
+- Unix-like operating system (Linux/macOS)
+- Bash shell environment
+- Write permissions in the project directory
+- Text processing utilities (grep, sed)
+
+3.2. Directory Structure:
+- Project root directory
+- 'agent-history' subdirectory for logs
+- Shell scripts directory for logging utilities
+
+4. IMPLEMENTATION
+----------------
+4.1. Directory Setup
+```bash
+# Create agent-history directory in project root
+mkdir -p agent-history
+```
+
+4.2. Log File Initialization
+Create the initial log file with metadata header:
+```bash
+cat << EOF > agent-history/agent-user-prompt-history-log.txt
+SESSION METADATA
+- Date: $(date)
+- Current Working Directory: $(pwd)
+- User: $(whoami)
+- Hostname: $(hostname)
+- LLM Model: Goose AI
+- Version: 1.0
+
+USER PROMPT HISTORY:
+EOF
+```
+
+4.3. Logging Scripts
+The following scripts provide different approaches to logging prompts. Choose the most appropriate for your needs:
+
+a) Basic Prompt Append Script (append_prompt.sh):
+```bash
+#!/bin/bash
+# Simple append without numbering
+LOGFILE="agent-history/agent-user-prompt-history-log.txt"
+if [ $# -eq 0 ]; then
+    echo "Usage: $0 \"User prompt text\""
+    exit 1
+fi
+echo "$1" >> "$LOGFILE"
+```
+
+b) Numbered Prompt Append Script (append_numbered_prompt.sh):
+```bash
+#!/bin/bash
+LOGFILE="agent-history/agent-user-prompt-history-log.txt"
+if [ $# -eq 0 ]; then
+    echo "Usage: $0 \"User prompt text\""
+    exit 1
+fi
+NEW_ENTRY_NUMBER=$(($(grep -c '^\d\+\.' "$LOGFILE") + 1))
+echo "" >> "$LOGFILE"
+echo "${NEW_ENTRY_NUMBER}. \"$1\"" >> "$LOGFILE"
+```
+
+5. USAGE INSTRUCTIONS
+--------------------
+5.1. Initial Setup:
+1. Create required directories and files
+2. Set appropriate permissions
+3. Install logging scripts in accessible location
+
+5.2. Regular Operation:
+1. Each new user prompt is automatically captured
+2. Prompts are numbered sequentially
+3. Timestamps and metadata are preserved
+4. Logs are appended to maintain history
+
+6. BEST PRACTICES
+----------------
+6.1. File Management:
+- Implement log rotation for large files
+- Regular backups of log files
+- Maintain consistent file permissions
+
+6.2. Data Quality:
+- Validate input before logging
+- Escape special characters
+- Maintain consistent formatting
+- Regular integrity checks
+
+6.3. Error Handling:
+- Check for file existence
+- Verify write permissions
+- Handle special characters
+- Implement backup procedures
+
+7. TROUBLESHOOTING
+-----------------
+Common Issues and Solutions:
+
+7.1. Permission Errors:
+- Verify file ownership
+- Check directory permissions
+- Ensure execute permissions on scripts
+
+7.2. Numbering Issues:
+- Reset sequence if needed
+- Verify grep patterns
+- Check for file corruption
+
+7.3. File System:
+- Monitor disk space
+- Check inode availability
+- Verify file system permissions
+
+8. SECURITY CONSIDERATIONS
+-------------------------
+8.1. Access Control:
+- Restrict log file permissions
+- Implement user authentication
+- Secure script execution
+
+8.2. Data Protection:
+- Sanitize input data
+- Encrypt sensitive information
+- Regular security audits
+
+9. MAINTENANCE
+-------------
+9.1. Regular Tasks:
+- Log rotation
+- Disk space monitoring
+- Backup procedures
+- Integrity checks
+
+9.2. Periodic Review:
+- Performance optimization
+- Security updates
+- Format improvements
+- Documentation updates
+
+10. REFERENCES
+-------------
+10.1. Documentation:
+- Bash Scripting Guide: https://tldp.org/LDP/abs/html/
+- Unix Text Processing: https://tldp.org/LDP/abs/html/textproc.html
+- File System Hierarchy: https://refspecs.linuxfoundation.org/FHS_3.0/fhs/index.html
+
+10.2. Related SOPs:
+- Text Processing SOP
+- File System Management SOP
+- Security Protocols SOP
+
+11. VERSION HISTORY
+------------------
+v1.0 - Initial release
+- Basic logging functionality
+- File management procedures
+- Security considerations
+
+12. APPENDICES
+-------------
+A. Script Inventory:
+   - append_prompt.sh
+   - append_numbered_prompt.sh
+   - append_prompt_final.sh
+   - append_user_prompt.sh
+
+B. File Format Specifications:
+   - Log file structure
+   - Metadata format
+   - Entry formatting
+
+C. Regular Expressions:
+   - Entry parsing
+   - Number extraction
+   - Format validation
+
+Note: This SOP should be reviewed and updated periodically to incorporate improvements and address new requirements.
