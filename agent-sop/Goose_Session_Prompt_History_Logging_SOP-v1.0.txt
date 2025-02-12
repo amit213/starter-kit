@@ -98,7 +98,7 @@ echo "${NEW_ENTRY_NUMBER}. \"$1\"" >> "$LOGFILE"
 3. Install logging scripts in accessible location
 
 5.2. Regular Operation:
-1. Each new user prompt is automatically captured
+1. Each new user prompt is automatically captured and logged verbatim and word for word 
 2. Prompts are numbered sequentially
 3. Timestamps and metadata are preserved
 4. Logs are appended to maintain history
