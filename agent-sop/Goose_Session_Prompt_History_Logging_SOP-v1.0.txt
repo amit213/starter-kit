@@ -102,6 +102,7 @@ echo "${NEW_ENTRY_NUMBER}. \"$1\"" >> "$LOGFILE"
 2. Prompts are numbered sequentially
 3. Timestamps and metadata are preserved
 4. Logs are appended to maintain history
+5. Once per start of new goose session its metadata info is also logged and appended to maintain history including version and working directory full path
 
 6. BEST PRACTICES
 ----------------
