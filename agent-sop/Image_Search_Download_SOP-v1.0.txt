@@ -1,0 +1,267 @@
+Image Search and Download Capability Standard Operating Procedure (SOP)
+==============================================================
+
+Purpose:
+--------
+This document provides comprehensive instructions for implementing and using image search and download capabilities within any LLM AI agent system. This method ensures reliable image discovery, filtering, and downloading based on specific criteria such as dimensions, content type, and quality requirements.
+
+Prerequisites:
+-------------
+1. Access to Python 3.x environment
+2. Basic understanding of HTTP protocols and image formats
+3. Access to file system for saving images
+4. Internet connectivity for searching and downloading
+5. Write permissions in the target directory
+
+Required Tools & Libraries:
+--------------------------
+1. Python 3.x
+2. Python libraries:
+   - urllib.request (standard library)
+   - ssl (standard library)
+   - PIL (Python Imaging Library) for image processing
+   - requests (optional, for advanced HTTP handling)
+3. Command line tools:
+   - wget or curl for downloads
+   - sips (on macOS) or ImageMagick for image information
+
+Step-by-Step Implementation:
+---------------------------
+
+1. Set Up Working Environment:
+   ```shell
+   # Create directory for downloaded images
+   mkdir -p /path/to/project/images
+   
+   # Install required Python packages if needed
+   pip install Pillow requests
+   ```
+
+2. Implement Basic Image Download Function:
+   ```python
+   import urllib.request
+   import ssl
+   import os
+   
+   def download_image(url, output_path, filename):
+       # Create SSL context that ignores certificate verification
+       ctx = ssl._create_unverified_context()
+       
+       # Set up headers to mimic browser request
+       headers = {
+           "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
+       }
+       
+       try:
+           req = urllib.request.Request(url, headers=headers)
+           with urllib.request.urlopen(req, context=ctx) as response:
+               with open(os.path.join(output_path, filename), "wb") as f:
+                   f.write(response.read())
+           return True, f"Successfully downloaded {filename}"
+       except Exception as e:
+           return False, f"Error downloading image: {str(e)}"
+   ```
+
+3. Implement Image Verification Function:
+   ```python
+   from PIL import Image
+   
+   def verify_image_dimensions(image_path, min_width=700, min_height=700):
+       try:
+           with Image.open(image_path) as img:
+               width, height = img.size
+               meets_criteria = width >= min_width and height >= min_height
+               return meets_criteria, (width, height)
+       except Exception as e:
+           return False, str(e)
+   ```
+
+4. Implement Batch Download Function:
+   ```python
+   def batch_download_images(image_urls, output_path):
+       results = []
+       for i, url in enumerate(image_urls, 1):
+           filename = f"image_{i}.jpg"
+           success, message = download_image(url, output_path, filename)
+           if success:
+               meets_criteria, dimensions = verify_image_dimensions(
+                   os.path.join(output_path, filename)
+               )
+               results.append({
+                   "filename": filename,
+                   "url": url,
+                   "success": success,
+                   "meets_criteria": meets_criteria,
+                   "dimensions": dimensions
+               })
+       return results
+   ```
+
+5. Image Source Configuration:
+   ```python
+   # Define reliable image sources
+   IMAGE_SOURCES = {
+       "freepik": {
+           "base_url": "https://www.freepik.com/",
+           "search_path": "search?format=search&query=",
+           "requires_auth": True
+       },
+       "unsplash": {
+           "base_url": "https://unsplash.com/",
+           "search_path": "s/photos/",
+           "requires_auth": False
+       },
+       "pexels": {
+           "base_url": "https://www.pexels.com/",
+           "search_path": "search/",
+           "requires_auth": False
+       }
+   }
+   ```
+
+Best Practices:
+--------------
+1. Image Download:
+   - Always use appropriate User-Agent headers
+   - Implement rate limiting for batch downloads
+   - Handle SSL certificate verification appropriately
+   - Use unique filenames to avoid overwrites
+
+2. Error Handling:
+   - Verify downloaded file integrity
+   - Check image dimensions before saving
+   - Implement retry logic for failed downloads
+   - Log all download attempts and results
+
+3. Image Verification:
+   - Check image dimensions post-download
+   - Verify image format and quality
+   - Ensure file permissions are correct
+   - Validate file size is reasonable
+
+4. Performance Optimization:
+   - Use async downloads for batch operations
+   - Implement caching when appropriate
+   - Clean up temporary files
+   - Use appropriate timeout values
+
+Common Issues and Solutions:
+--------------------------
+1. SSL Certificate Errors:
+   - Use ssl._create_unverified_context() for testing
+   - Properly configure SSL certificates in production
+   - Update Python's certificate authorities
+
+2. Access Denied Issues:
+   - Implement proper User-Agent headers
+   - Respect robots.txt
+   - Add delays between requests
+   - Use API keys when available
+
+3. Image Quality Issues:
+   - Verify image resolution before download
+   - Check file size for quality indicators
+   - Implement image compression if needed
+   - Validate image format support
+
+Usage Examples:
+-------------
+1. Basic Image Download:
+   ```python
+   # Download single image
+   success, message = download_image(
+       "https://example.com/image.jpg",
+       "/path/to/output",
+       "output.jpg"
+   )
+   ```
+
+2. Batch Download with Verification:
+   ```python
+   # Download multiple images
+   urls = [
+       "https://example.com/image1.jpg",
+       "https://example.com/image2.jpg"
+   ]
+   results = batch_download_images(urls, "/path/to/output")
+   ```
+
+3. Image Dimension Check:
+   ```python
+   # Verify image meets size requirements
+   meets_criteria, dimensions = verify_image_dimensions(
+       "path/to/image.jpg",
+       min_width=700,
+       min_height=700
+   )
+   ```
+
+Security Considerations:
+----------------------
+1. SSL/TLS:
+   - Use secure connections (https)
+   - Validate certificates in production
+   - Keep security libraries updated
+
+2. File System:
+   - Sanitize filenames
+   - Verify write permissions
+   - Implement file size limits
+   - Clean up temporary files
+
+3. Resource Usage:
+   - Implement download size limits
+   - Add timeout for connections
+   - Monitor disk space usage
+   - Handle memory efficiently
+
+References:
+----------
+1. Image Processing Libraries:
+   - PIL/Pillow Documentation: https://pillow.readthedocs.io/
+   - ImageMagick Documentation: https://imagemagick.org/script/command-line-tools.php
+
+2. Image Sources:
+   - Unsplash API: https://unsplash.com/developers
+   - Pexels API: https://www.pexels.com/api/
+   - Freepik API: https://www.freepik.com/api-rest-reference
+
+3. HTTP Libraries:
+   - Requests Library: https://docs.python-requests.org/
+   - urllib Documentation: https://docs.python.org/3/library/urllib.html
+
+4. Best Practices:
+   - Web Scraping Best Practices: https://www.scrapingbee.com/blog/web-scraping-best-practices/
+   - Image Processing Best Practices: https://www.smashingmagazine.com/2015/06/efficient-image-resizing-with-imagemagick/
+
+Version History:
+--------------
+v1.0 - Initial version
+- Basic implementation of image search and download
+- Added dimension verification
+- Included batch download capability
+- Added security considerations
+- Documented best practices and common issues
+
+Future Enhancements:
+------------------
+1. Add support for more image formats
+2. Implement advanced filtering options
+3. Add image manipulation capabilities
+4. Enhance error handling and recovery
+5. Add support for more image sources
+6. Implement parallel download capability
+
+Maintenance:
+-----------
+1. Regular Updates:
+   - Check for library updates
+   - Update User-Agent strings
+   - Verify image source APIs
+   - Test with new Python versions
+
+2. Monitoring:
+   - Track download success rates
+   - Monitor resource usage
+   - Check for API changes
+   - Verify image quality consistency
